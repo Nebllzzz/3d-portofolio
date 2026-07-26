@@ -1,6 +1,6 @@
-# Portfolio Nandi — Spec & Context Pack
+# Portfolio Nandi — 3D Monokrom
 
-Kumpulan file spesifikasi untuk membangun **website portofolio 3D monokrom dinamis** milik Nandi Rifki Baihaqi. File-file ini dirancang agar bisa dibaca langsung oleh Claude Code (atau kamu sendiri) sebagai konteks project, jadi kamu tidak perlu menjelaskan ulang tiap kali membuka sesi baru.
+Website portofolio 3D monokrom dinamis milik **Nandi Rifki Baihaqi**. Repo ini adalah monorepo: Laravel (API + admin panel) dan Vue 3 (sisi publik) hidup berdampingan, dengan spesifikasi lengkap di `docs/`.
 
 ## Stack
 
@@ -8,16 +8,47 @@ Kumpulan file spesifikasi untuk membangun **website portofolio 3D monokrom dinam
 - **3D & motion:** Three.js + GSAP
 - **Backend / admin panel:** Laravel 11
 - **Database:** MySQL
-- **Sumber data awal:** CV Nandi → sudah dijadikan seeder di `database/seeders/`
+- **Sumber data awal:** CV Nandi → sudah dijadikan seeder di `backend/database/seeders/`
 
-## Cara pakai file ini di Claude Code
+## Struktur repo
 
-1. Taruh seluruh folder ini di root project kamu.
-2. Buka Claude Code di folder itu, lalu suruh Claude membaca `docs/` dulu:
-   > "Baca semua file di folder docs, lalu mulai scaffold frontend Vue sesuai `docs/05-FRONTEND-VUE.md`."
-3. Untuk backend, arahkan ke `docs/06-BACKEND-LARAVEL.md` dan seeder yang sudah ada.
+```
+3d-portofolio/
+├── docs/          # spesifikasi (baca ini dulu)
+├── backend/       # Laravel 11 — API + admin panel
+│   └── database/
+│       ├── migrations/   # 11 tabel sesuai docs/03-DATABASE-SCHEMA.md
+│       └── seeders/      # data asli dari CV Nandi
+└── frontend/      # Vue 3 + Vite + Three.js + GSAP
+```
 
-## Urutan baca yang disarankan
+## Menjalankan
+
+### Backend
+
+```bash
+cd backend
+cp .env.example .env          # isi DB_USERNAME, DB_PASSWORD, dan ADMIN_PASSWORD
+php artisan key:generate
+mysql -u root -p -e "CREATE DATABASE portfolio_nandi"
+php artisan migrate --seed
+php artisan serve             # http://localhost:8000
+```
+
+`ADMIN_PASSWORD` wajib diisi — seeder menolak jalan kalau kosong, supaya tidak ada akun admin berpassword tebakan. Panel admin ada di `/admin`.
+
+Belum punya kredensial MySQL? Untuk coba cepat, ganti `DB_CONNECTION=sqlite` di `.env`, jalankan `touch database/database.sqlite`, lalu `php artisan migrate --seed`.
+
+### Frontend
+
+```bash
+cd frontend
+cp .env.example .env          # VITE_API_URL=http://localhost:8000
+npm install
+npm run dev                   # http://localhost:5173
+```
+
+## Urutan baca dokumentasi
 
 | File | Isi |
 |------|-----|
@@ -27,8 +58,36 @@ Kumpulan file spesifikasi untuk membangun **website portofolio 3D monokrom dinam
 | `docs/04-SECTIONS-SITEMAP.md` | Daftar section/menu (termasuk yang mirip referensi + tambahan) |
 | `docs/05-FRONTEND-VUE.md` | Struktur komponen Vue + implementasi 3D |
 | `docs/06-BACKEND-LARAVEL.md` | API, model, admin panel |
-| `database/seeders/*` | Data asli Nandi, siap `php artisan db:seed` |
+| `backend/database/seeders/*` | Data asli Nandi, siap `php artisan db:seed` |
+
+## Status
+
+Sudah jadi:
+
+- Struktur monorepo, Laravel 11 + Vue 3 terpasang
+- 11 migration sesuai skema, teruji jalan bersama seeder
+- API publik: 6 endpoint + rate limit di form kontak
+- Frontend Vue lengkap: 6 section, hero 3D Three.js, terpasang ke API
+- Admin panel Filament v5 di `/admin` — CRUD semua konten, upload foto/CV, kotak masuk pesan
+
+Belum dikerjakan:
+
+- Deploy (hosting, domain, HTTPS)
+- Upgrade Laravel 12 (lihat catatan keamanan di bawah)
+
+## Catatan keamanan
+
+`composer audit` melaporkan CVE-2026-48019 (CRLF injection di rule validasi `email`) yang
+mempengaruhi semua Laravel 11. Mitigasi sementara sudah dipasang: form kontak memakai
+`email:strict`, bukan rule `email` bawaan. Perbaikan sebenarnya ada di Laravel 12.60+,
+jadi upgrade tetap disarankan sebelum situs dipublikasikan.
 
 ## Catatan penting soal data
 
-Data di seeder diambil dari CV Nandi. Beberapa bagian (misalnya daftar skill teknis) aku lengkapi mengikuti struktur referensi yang kamu kasih supaya portofolionya terlihat penuh — silakan **edit sesuai kemampuan yang benar-benar kamu kuasai** sebelum dipublikasikan, biar jujur dan tidak overclaim saat wawancara kerja.
+Data di seeder diambil dari CV Nandi. Beberapa bagian (misalnya daftar skill teknis) dilengkapi mengikuti struktur referensi supaya portofolionya terlihat penuh — **edit sesuai kemampuan yang benar-benar kamu kuasai** sebelum dipublikasikan, biar jujur dan tidak overclaim saat wawancara kerja.
+
+Yang masih perlu diisi manual:
+
+- Password admin di `backend/database/seeders/DatabaseSeeder.php` (masih `ubah_password_ini`)
+- URL LinkedIn di `ProfileSeeder.php` (masih placeholder)
+- Nama repo project di `ProjectSeeder.php` (`kasir-caffee`, `kasir-bioskop`) — pastikan cocok dengan repo asli
