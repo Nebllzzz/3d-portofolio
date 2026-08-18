@@ -14,7 +14,9 @@ USER node
 
 COPY --chown=node:node frontend/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 ENTRYPOINT ["sh", "/usr/local/bin/docker-entrypoint"]
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "6010"]
+ARG VITE_PORT=6010
+ENV VITE_PORT=${VITE_PORT}
+CMD ["sh", "-c", "npm run dev -- --host 0.0.0.0 --port ${VITE_PORT}"]
 
 # ---------- build: hasil `vite build` ----------
 FROM node:22-alpine AS build
