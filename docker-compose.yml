@@ -1,25 +1,27 @@
 # Port map:
-#   6010 -> frontend  (Vue 3 + Vite dev server)
-#   6011 -> backend   (nginx -> php-fpm; API Laravel + panel Filament /admin)
-#   6012 -> db        (MySQL 8.4)
-#   6013 -> phpmyadmin
+#   7010 -> frontend  (Vue 3 + Vite dev server)
+#   7011 -> backend   (nginx -> php-fpm; API Laravel + panel Filament /admin)
 #
-# Semua service dihubungkan lewat network `portfolio-net`; antar container
-# saling panggil pakai nama service (mis. DB_HOST=db, fastcgi_pass backend:9000).
+# Semua service dihubungkan lewat network `portfolio-net`. Database tidak
+# dipublikasikan ke host dan hanya bisa diakses container di network ini
+# memakai nama service `db` (mis. DB_HOST=db).
 
 name: portofolio
 
 x-app-env: &app-env
   APP_ENV: ${APP_ENV:-local}
   APP_DEBUG: ${APP_DEBUG:-true}
-  APP_URL: ${APP_URL:-http://localhost:6011}
-  FRONTEND_URL: ${FRONTEND_URL:-http://localhost:6010}
+  APP_URL: ${APP_URL:-http://localhost:7011}
+  FRONTEND_URL: ${FRONTEND_URL:-http://localhost:7010}
   DB_CONNECTION: mysql
   DB_HOST: db
   DB_PORT: 3306
   DB_DATABASE: ${DB_DATABASE:-portfolio_nandi}
   DB_USERNAME: ${DB_USERNAME:-nandi}
   DB_PASSWORD: ${DB_PASSWORD:-nandi}
+  ADMIN_EMAIL: ${ADMIN_EMAIL:-nandizailani@gmail.com}
+  # Default ini hanya untuk development lokal. Ganti sebelum deploy.
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-this-before-production}
 
 services:
   db:
@@ -32,8 +34,6 @@ services:
       MYSQL_USER: ${DB_USERNAME:-nandi}
       MYSQL_PASSWORD: ${DB_PASSWORD:-nandi}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
-    ports:
-      - "6012:3306"
     volumes:
       - db-data:/var/lib/mysql
     healthcheck:
@@ -68,7 +68,7 @@ services:
     container_name: portofolio-nginx
     restart: unless-stopped
     ports:
-      - "6011:80"
+      - "7011:80"
     volumes:
       - ./backend:/var/www/html:ro
       - ./docker/nginx/backend.conf:/etc/nginx/conf.d/default.conf:ro
@@ -88,30 +88,14 @@ services:
     container_name: portofolio-frontend
     restart: unless-stopped
     environment:
-      VITE_API_URL: ${VITE_API_URL:-http://localhost:6011}
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:7011}
     ports:
-      - "6010:6010"
+      - "7010:7010"
     volumes:
       - ./frontend:/app
       - frontend-node-modules:/app/node_modules
     depends_on:
       - nginx
-    networks:
-      - portfolio-net
-
-  phpmyadmin:
-    image: phpmyadmin:5
-    container_name: portofolio-phpmyadmin
-    restart: unless-stopped
-    environment:
-      PMA_HOST: db
-      PMA_PORT: 3306
-      UPLOAD_LIMIT: 64M
-    ports:
-      - "6013:80"
-    depends_on:
-      db:
-        condition: service_healthy
     networks:
       - portfolio-net
 

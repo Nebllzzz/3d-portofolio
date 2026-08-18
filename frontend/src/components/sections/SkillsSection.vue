@@ -13,7 +13,7 @@ defineProps({
       <SectionTitle
         eyebrow="02 — Skill Teknis"
         title="Yang saya pakai untuk membangun"
-        lead="Dikelompokkan per peran, bukan per tingkat kemahiran — supaya jelas apa yang saya pegang di setiap lapisan aplikasi."
+        lead="Teknologi yang saya gunakan untuk membangun, merawat, dan mengintegrasikan aplikasi web."
       />
 
       <div class="skills">

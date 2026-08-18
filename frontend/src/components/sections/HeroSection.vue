@@ -43,7 +43,7 @@ const words = computed(() => {
       </p>
 
       <div class="hero__actions">
-        <a class="btn btn--primary" href="#projects">Lihat Project</a>
+        <a class="btn btn--primary" href="#journey">Lihat pengalaman</a>
         <a v-if="profile?.cv_url" class="btn btn--ghost" :href="profile.cv_url" download>
           Unduh CV
         </a>

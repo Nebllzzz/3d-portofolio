@@ -10,8 +10,8 @@ const facts = computed(() => {
   if (!props.profile) return []
   return [
     { label: 'Lahir', value: `${props.profile.birth_place}, ${formatDate(props.profile.birth_date)}` },
-    { label: 'Lokasi', value: 'Kab. Bandung, Jawa Barat' },
-    { label: 'Fokus', value: 'Laravel · PHP · MySQL' },
+    { label: 'Lokasi', value: props.profile.location },
+    { label: 'Fokus', value: props.profile.focus },
   ]
 })
 

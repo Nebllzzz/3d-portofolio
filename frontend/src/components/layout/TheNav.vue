@@ -9,7 +9,6 @@ const links = [
   { id: 'home', label: 'Home' },
   { id: 'about', label: 'About' },
   { id: 'skills', label: 'Skills' },
-  { id: 'projects', label: 'Projects' },
   { id: 'journey', label: 'Journey' },
   { id: 'contact', label: 'Contact' },
 ]
@@ -51,7 +50,7 @@ onBeforeUnmount(() => {
 <template>
   <header class="nav" :class="{ 'nav--scrolled': scrolled }">
     <div class="container nav__inner">
-      <a href="#home" class="nav__logo" aria-label="Ke atas">N</a>
+      <a href="#home" class="nav__logo" aria-label="Ke atas">M</a>
 
       <nav class="nav__links" aria-label="Navigasi utama">
         <a

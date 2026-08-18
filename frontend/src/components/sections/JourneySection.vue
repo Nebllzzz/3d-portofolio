@@ -15,19 +15,10 @@ const filters = [
 
 const active = ref('all')
 
-// date_label diisi bebas dari admin ("12 Mei 2024", "2022 – 2024"), jadi
-// tahun terakhir diambil dari string untuk mengurutkan timeline.
-function latestYear(text) {
-  const years = String(text).match(/\d{4}/g)
-  return years ? Math.max(...years.map(Number)) : 0
-}
-
 const nodes = computed(() => {
   const fromExperience = props.experiences.map((item) => ({
     id: `exp-${item.id}`,
     type: 'experience',
-    when: item.date_label,
-    year: latestYear(item.date_label),
     title: item.title,
     subtitle: item.subtitle,
     points: item.points ?? [],
@@ -36,14 +27,12 @@ const nodes = computed(() => {
   const fromEducation = props.educations.map((item) => ({
     id: `edu-${item.id}`,
     type: 'education',
-    when: `${item.year_start} – ${item.year_end}`,
-    year: Number(item.year_end),
     title: item.institution,
-    subtitle: item.level,
+    subtitle: `${item.level} · ${item.year_start} – ${item.year_end}`,
     points: [],
   }))
 
-  const all = [...fromExperience, ...fromEducation].sort((a, b) => b.year - a.year)
+  const all = [...fromExperience, ...fromEducation]
   return active.value === 'all' ? all : all.filter((node) => node.type === active.value)
 })
 </script>
@@ -52,9 +41,9 @@ const nodes = computed(() => {
   <section id="journey" class="section">
     <div class="container">
       <SectionTitle
-        eyebrow="04 — Perjalanan"
+        eyebrow="03 — Perjalanan"
         title="Pengalaman & pendidikan"
-        lead="Urutan yang membentuk cara saya kerja sekarang."
+        lead="Pengalaman yang membentuk cara saya membangun dan merawat aplikasi web."
       />
 
       <div v-reveal class="journey__filters" role="group" aria-label="Saring perjalanan">
@@ -78,7 +67,6 @@ const nodes = computed(() => {
           class="journey__node"
         >
           <span class="journey__marker" aria-hidden="true" />
-          <p class="eyebrow journey__when">{{ node.when }}</p>
           <h3 class="journey__title">{{ node.title }}</h3>
           <p v-if="node.subtitle" class="journey__subtitle">{{ node.subtitle }}</p>
           <ul v-if="node.points.length" class="journey__points">

@@ -50,7 +50,7 @@ async function submit() {
 <template>
   <section id="contact" class="section section--lift">
     <div class="container">
-      <SectionTitle eyebrow="05 — Kontak" title="Mari bicara" />
+      <SectionTitle eyebrow="04 — Kontak" title="Mari bicara" />
 
       <div class="contact">
         <div v-reveal class="contact__aside">

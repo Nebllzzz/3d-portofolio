@@ -14,7 +14,7 @@ Website portofolio 3D monokrom dinamis milik **Nandi Rifki Baihaqi**. Repo ini a
 
 ```
 3d-portofolio/
-├── docker-compose.yml   # frontend + backend + MySQL + phpMyAdmin
+├── docker-compose.yml   # frontend + backend + MySQL
 ├── docker/              # config nginx & php untuk container
 ├── docs/          # spesifikasi (baca ini dulu)
 ├── backend/       # Laravel 11 — API + admin panel
@@ -32,19 +32,17 @@ Butuh Docker + Docker Compose v2. Semua service (frontend, backend, MySQL) jalan
 network `portofolio-net` dan saling panggil pakai nama service.
 
 ```bash
-cp .env.example .env          # isi UID/GID sesuai `id -u` dan `id -g`
+cp .env.example .env          # opsional; untuk mengganti UID/GID atau kredensial default lokal
 docker compose up -d --build
-docker compose exec backend php artisan db:seed --force   # sekali saja, isi data awal
 ```
 
 | Port | Service | URL |
 |------|---------|-----|
-| **6010** | Frontend Vue 3 (Vite dev server, hot reload) | http://localhost:6010 |
-| **6011** | Backend Laravel — API + panel Filament | http://localhost:6011 · http://localhost:6011/admin |
-| **6012** | MySQL 8.4 | `mysql -h 127.0.0.1 -P 6012 -u nandi -p` |
-| **6013** | phpMyAdmin | http://localhost:6013 |
+| **7010** | Frontend Vue 3 (Vite dev server, hot reload) | http://localhost:7010 |
+| **7011** | Backend Laravel — API + panel Filament | http://localhost:7011 · http://localhost:7011/admin |
+| — | MySQL 8.4 | Hanya dapat diakses container di network `portofolio-net` |
 
-Migration jalan otomatis tiap container `backend` start. Folder `backend/` dan `frontend/`
+Migration dan seeding awal jalan otomatis tiap container `backend` start. Folder `backend/` dan `frontend/`
 di-bind mount, jadi perubahan kode langsung kepakai tanpa rebuild — kecuali kalau kamu ubah
 `Dockerfile`/`docker-entrypoint.sh`, itu perlu `docker compose build`.
 
@@ -75,7 +73,7 @@ php artisan migrate --seed
 php artisan serve             # http://localhost:8000
 ```
 
-`ADMIN_PASSWORD` wajib diisi — seeder menolak jalan kalau kosong, supaya tidak ada akun admin berpassword tebakan. Panel admin ada di `/admin`.
+Untuk Docker lokal, kredensial admin default ada di `.env.example`; ganti `ADMIN_PASSWORD` sebelum deployment. Panel admin ada di `/admin`.
 
 Belum punya kredensial MySQL? Untuk coba cepat, ganti `DB_CONNECTION=sqlite` di `.env`, jalankan `touch database/database.sqlite`, lalu `php artisan migrate --seed`.
 

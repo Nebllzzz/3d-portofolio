@@ -27,6 +27,7 @@ until php -r 'exit(@fsockopen(getenv("DB_HOST") ?: "db", (int)(getenv("DB_PORT")
 done
 
 php artisan migrate --force --no-interaction
+php artisan db:seed --force --no-interaction
 
 # Symlink relatif (bukan `artisan storage:link` yang absolut) supaya tetap valid
 # di host maupun di container — folder backend/ ini di-bind mount ke keduanya.

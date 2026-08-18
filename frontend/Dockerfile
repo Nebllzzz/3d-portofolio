@@ -14,7 +14,7 @@ USER node
 
 COPY --chown=node:node frontend/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 ENTRYPOINT ["sh", "/usr/local/bin/docker-entrypoint"]
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "6010"]
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "7010"]
 
 # ---------- build: hasil `vite build` ----------
 FROM node:22-alpine AS build
@@ -22,7 +22,7 @@ WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm ci
 COPY frontend/ ./
-ARG VITE_API_URL=http://localhost:6011
+ARG VITE_API_URL=http://localhost:7011
 ENV VITE_API_URL=${VITE_API_URL}
 RUN npm run build
 

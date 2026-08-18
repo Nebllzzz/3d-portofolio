@@ -10,7 +10,7 @@ const year = new Date().getFullYear()
   <footer class="footer">
     <div class="container footer__inner">
       <div>
-        <p class="footer__name">{{ profile?.full_name ?? 'Nandi Rifki Baihaqi' }}</p>
+        <p class="footer__name">{{ profile?.full_name ?? 'Maulana Husein' }}</p>
         <p class="eyebrow">© {{ year }} · Dibangun dengan Vue + Laravel</p>
       </div>
 
