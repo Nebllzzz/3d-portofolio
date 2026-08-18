@@ -14,6 +14,8 @@ Website portofolio 3D monokrom dinamis milik **Nandi Rifki Baihaqi**. Repo ini a
 
 ```
 3d-portofolio/
+├── docker-compose.yml   # frontend + backend + MySQL + phpMyAdmin
+├── docker/              # config nginx & php untuk container
 ├── docs/          # spesifikasi (baca ini dulu)
 ├── backend/       # Laravel 11 — API + admin panel
 │   └── database/
@@ -24,7 +26,45 @@ Website portofolio 3D monokrom dinamis milik **Nandi Rifki Baihaqi**. Repo ini a
 
 ## Menjalankan
 
-### Backend
+### Docker Compose (paling cepat)
+
+Butuh Docker + Docker Compose v2. Semua service (frontend, backend, MySQL) jalan di satu
+network `portofolio-net` dan saling panggil pakai nama service.
+
+```bash
+cp .env.example .env          # isi UID/GID sesuai `id -u` dan `id -g`
+docker compose up -d --build
+docker compose exec backend php artisan db:seed --force   # sekali saja, isi data awal
+```
+
+| Port | Service | URL |
+|------|---------|-----|
+| **6010** | Frontend Vue 3 (Vite dev server, hot reload) | http://localhost:6010 |
+| **6011** | Backend Laravel — API + panel Filament | http://localhost:6011 · http://localhost:6011/admin |
+| **6012** | MySQL 8.4 | `mysql -h 127.0.0.1 -P 6012 -u nandi -p` |
+| **6013** | phpMyAdmin | http://localhost:6013 |
+
+Migration jalan otomatis tiap container `backend` start. Folder `backend/` dan `frontend/`
+di-bind mount, jadi perubahan kode langsung kepakai tanpa rebuild — kecuali kalau kamu ubah
+`Dockerfile`/`docker-entrypoint.sh`, itu perlu `docker compose build`.
+
+Perintah harian:
+
+```bash
+docker compose logs -f backend frontend     # lihat log
+docker compose exec backend php artisan …   # artisan
+docker compose exec frontend npm i <paket>  # tambah dependency frontend
+docker compose down                         # stop (data DB tetap aman di volume)
+docker compose down -v                      # stop + hapus data DB
+```
+
+Kenapa `UID`/`GID` di `.env` penting: container backend menulis ke `storage/` dan
+`bootstrap/cache/` lewat bind mount. Kalau UID-nya beda dengan user host, file hasil tulisan
+container jadi milik user lain dan bikin error permission saat kamu jalan di host.
+
+### Manual (tanpa Docker)
+
+#### Backend
 
 ```bash
 cd backend
@@ -39,7 +79,7 @@ php artisan serve             # http://localhost:8000
 
 Belum punya kredensial MySQL? Untuk coba cepat, ganti `DB_CONNECTION=sqlite` di `.env`, jalankan `touch database/database.sqlite`, lalu `php artisan migrate --seed`.
 
-### Frontend
+#### Frontend
 
 ```bash
 cd frontend
