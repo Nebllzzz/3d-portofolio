@@ -30,12 +30,11 @@ export const skillCategories = [
   },
   {
     id: 'backend',
-    name: 'Backend & Database',
+    name: 'Backend & Framework',
     skills: [
       { id: 'laravel', name: 'Laravel' },
       { id: 'codeigniter', name: 'CodeIgniter 2 & 3' },
       { id: 'fastapi', name: 'FastAPI' },
-      { id: 'mysql', name: 'MySQL' },
     ],
   },
   {
@@ -48,13 +47,32 @@ export const skillCategories = [
     ],
   },
   {
+    id: 'databases',
+    name: 'Database',
+    skills: [
+      { id: 'mysql', name: 'MySQL' },
+      { id: 'postgresql', name: 'PostgreSQL' },
+      { id: 'mongodb', name: 'MongoDB (NoSQL)' },
+    ],
+  },
+  {
     id: 'integration',
-    name: 'Integrasi & Tools',
+    name: 'Integrasi & API',
     skills: [
       { id: 'rest-api', name: 'REST API' },
       { id: 'odoo', name: 'Odoo' },
       { id: 'meta', name: 'Meta Platform APIs' },
+      { id: 'swagger', name: 'Swagger / OpenAPI' },
+    ],
+  },
+  {
+    id: 'tools',
+    name: 'Development Tools',
+    skills: [
+      { id: 'vscode', name: 'VS Code' },
+      { id: 'postman', name: 'Postman' },
       { id: 'git', name: 'Git' },
+      { id: 'github', name: 'GitHub' },
     ],
   },
 ]

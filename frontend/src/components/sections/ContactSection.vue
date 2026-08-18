@@ -1,6 +1,4 @@
 <script setup>
-import { reactive, ref } from 'vue'
-import api from '../../composables/useApi'
 import SectionTitle from '../ui/SectionTitle.vue'
 
 defineProps({
@@ -15,36 +13,6 @@ function readableTarget(url) {
     .replace(/\/$/, '')
 }
 
-const form = reactive({ name: '', email: '', message: '' })
-const fieldErrors = ref({})
-const status = ref('idle') // idle | sending | sent | error
-const errorMessage = ref('')
-
-async function submit() {
-  status.value = 'sending'
-  fieldErrors.value = {}
-  errorMessage.value = ''
-
-  try {
-    await api.post('/api/contact', { ...form })
-    status.value = 'sent'
-    form.name = ''
-    form.email = ''
-    form.message = ''
-  } catch (error) {
-    status.value = 'error'
-    const response = error.response
-
-    if (response?.status === 422) {
-      fieldErrors.value = response.data.errors ?? {}
-      errorMessage.value = 'Periksa lagi isian di bawah.'
-    } else if (response?.status === 429) {
-      errorMessage.value = 'Terlalu banyak percobaan. Coba lagi sebentar lagi.'
-    } else {
-      errorMessage.value = 'Pesan gagal terkirim. Coba lagi, atau hubungi lewat email.'
-    }
-  }
-}
 </script>
 
 <template>
@@ -55,8 +23,8 @@ async function submit() {
       <div class="contact">
         <div v-reveal class="contact__aside">
           <p class="contact__pitch">
-            Sedang mencari orang yang bisa membangun aplikasi web dari nol? Kirim pesan, saya
-            balas secepatnya.
+            Sedang mencari orang yang bisa membangun aplikasi web dari nol? Hubungi saya lewat
+            email atau WhatsApp.
           </p>
 
           <ul v-if="profile?.socials?.length" class="contact__links">
@@ -69,36 +37,12 @@ async function submit() {
           </ul>
         </div>
 
-        <form v-reveal="{ delay: 80 }" class="contact__form" novalidate @submit.prevent="submit">
-          <div class="field">
-            <label class="eyebrow" for="name">Nama</label>
-            <input id="name" v-model="form.name" type="text" autocomplete="name" required />
-            <p v-if="fieldErrors.name" class="field__error">{{ fieldErrors.name[0] }}</p>
-          </div>
-
-          <div class="field">
-            <label class="eyebrow" for="email">Email</label>
-            <input id="email" v-model="form.email" type="email" autocomplete="email" required />
-            <p v-if="fieldErrors.email" class="field__error">{{ fieldErrors.email[0] }}</p>
-          </div>
-
-          <div class="field">
-            <label class="eyebrow" for="message">Pesan</label>
-            <textarea id="message" v-model="form.message" rows="5" required />
-            <p v-if="fieldErrors.message" class="field__error">{{ fieldErrors.message[0] }}</p>
-          </div>
-
-          <button class="btn btn--primary" type="submit" :disabled="status === 'sending'">
-            {{ status === 'sending' ? 'Mengirim…' : 'Kirim Pesan' }}
-          </button>
-
-          <p v-if="status === 'sent'" class="form-note form-note--ok" role="status">
-            Pesan terkirim — saya balas secepatnya.
-          </p>
-          <p v-if="status === 'error'" class="form-note form-note--bad" role="alert">
-            {{ errorMessage }}
-          </p>
-        </form>
+        <div v-reveal="{ delay: 80 }" class="contact__actions" aria-label="Pilihan kontak">
+          <a class="btn btn--primary" :href="`mailto:${profile?.email}`">Kirim Email</a>
+          <a class="btn btn--ghost" href="https://wa.me/628976321037" target="_blank" rel="noopener">
+            Chat WhatsApp
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -149,54 +93,11 @@ async function submit() {
   overflow-wrap: anywhere;
 }
 
-.contact__form {
+.contact__actions {
   display: grid;
-  gap: 1.25rem;
+  gap: 0.75rem;
   justify-items: start;
-}
-
-.field {
-  display: grid;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-.field input,
-.field textarea {
-  width: 100%;
-  padding: 0.75rem 0.9rem;
-  background: var(--ink-700);
-  border: 1px solid var(--ink-500);
-  border-radius: var(--radius-card);
-  color: var(--paper-50);
-  font: inherit;
-  font-size: 1rem;
-  resize: vertical;
-  transition: border-color var(--dur-fast) var(--ease-out);
-}
-
-.field input:hover,
-.field textarea:hover {
-  border-color: rgba(245, 245, 242, 0.24);
-}
-
-.field__error {
-  font-size: 0.8125rem;
-  color: var(--paper-50);
-}
-
-.form-note {
-  font-size: 0.9375rem;
-}
-
-.form-note--ok {
-  color: var(--paper-50);
-}
-
-.form-note--bad {
-  color: var(--fog-200);
-  border-left: 2px solid var(--paper-50);
-  padding-left: 0.75rem;
+  align-content: start;
 }
 
 @media (max-width: 820px) {

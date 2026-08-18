@@ -11,7 +11,7 @@ const year = new Date().getFullYear()
     <div class="container footer__inner">
       <div>
         <p class="footer__name">{{ profile?.full_name ?? 'Maulana Husein' }}</p>
-        <p class="eyebrow">© {{ year }} · Dibangun dengan Vue + Laravel</p>
+        <p class="eyebrow">© {{ year }} · Dibangun dengan Vue</p>
       </div>
 
       <a href="#home" class="footer__top eyebrow">Kembali ke atas ↑</a>
